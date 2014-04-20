@@ -94,9 +94,11 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DataParser.cs" />
     <Compile Include="DevicePage.xaml.cs">
       <DependentUpon>DevicePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Message.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="DeviceType.cs" />
     <Compile Include="LocalizedStrings.cs" />
