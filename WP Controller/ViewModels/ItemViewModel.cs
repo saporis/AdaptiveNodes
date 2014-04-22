@@ -40,6 +40,20 @@ namespace WP_Controller.ViewModels
             }
         }
 
+        private string _uniqueAddress;
+        public string UniqueAddress
+        {
+            get
+            {
+                return _uniqueAddress;
+            }
+            set
+            {
+                _uniqueAddress = value;
+                NotifyPropertyChanged("UniqueAddress");
+            }
+        }
+
         private string _friendlyName;
         public string FriendlyName
         {
@@ -104,7 +118,7 @@ namespace WP_Controller.ViewModels
         {
             get
             {
-                return _lastHeartBeat.ToString();
+                return _uniqueAddress + " - " + _lastHeartBeat.ToString();
             }
         }
 

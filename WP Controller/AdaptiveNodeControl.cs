@@ -19,11 +19,11 @@ namespace WP_Controller
         private DataReader _dataReader;
         private BackgroundWorker dataReadWorker;
 
-        public delegate void MessageReceivedHandler(string message);
+        public delegate void MessageReceivedHandler(Message message);
         public event MessageReceivedHandler MessageReceived;        
 
         public delegate void DebugDataReceivedHandler(byte[] debugData);
-        public event DebugDataReceivedHandler MessageReceived;        
+        public event DebugDataReceivedHandler DebugMessageReceived;        
 
 
         public StreamSocket Socket
@@ -37,7 +37,7 @@ namespace WP_Controller
                     _dataWriter = new DataWriter(_socket.OutputStream);
                     _dataReader = new DataReader(_socket.InputStream) { InputStreamOptions = InputStreamOptions.Partial };
 
-                 //   _dataWriter.ByteOrder = ByteOrder.LittleEndian;
+                    //_dataWriter.ByteOrder = ByteOrder.LittleEndian;
 
                     dataReadWorker.RunWorkerAsync();
                 }
@@ -75,19 +75,22 @@ namespace WP_Controller
                             byte receivedByte = _dataReader.ReadByte();
                             if (receivedByte == '\n')
                             {
-                                string message = System.Text.Encoding.UTF8.GetString(buffer, 0, bufferIdx);
+                                //string message = System.Text.Encoding.UTF8.GetString(buffer, 0, bufferIdx);
+                                Message message = DataParser.ParseByteArrayAsMessage(buffer, bufferIdx);
 
-                                int validMessageHeader = message.IndexOf(">M>");
-                                if (validMessageHeader >= 0)
+                                //int validMessageHeader = message.IndexOf(">M>");
+                                //if (validMessageHeader >= 0)
+                                //{
+                                //    if ((bufferIdx - validMessageHeader) > 12)
+                                //    {
+                                //        string parsedMessage = message.Substring(validMessageHeader, bufferIdx - validMessageHeader - 1);
+                                //        MessageReceived(parsedMessage);
+                                //    }
+                                //}
+                                if (message != null)
                                 {
-                                    if ((bufferIdx - validMessageHeader) > 12)
-                                    {
-                                        string parsedMessage = message.Substring(validMessageHeader, bufferIdx - validMessageHeader);
-                                        MessageReceived(parsedMessage);
-                                    }
+                                    MessageReceived(message);
                                 }
-                                // if (message.Contains(">D>"))
-            {
                                 
                                 // Clear the buffer, start over
                                 break; // inner loop
