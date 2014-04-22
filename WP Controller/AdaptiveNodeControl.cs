@@ -22,6 +22,10 @@ namespace WP_Controller
         public delegate void MessageReceivedHandler(string message);
         public event MessageReceivedHandler MessageReceived;        
 
+        public delegate void DebugDataReceivedHandler(byte[] debugData);
+        public event DebugDataReceivedHandler MessageReceived;        
+
+
         public StreamSocket Socket
         {
             get { return _socket; }
@@ -82,7 +86,9 @@ namespace WP_Controller
                                         MessageReceived(parsedMessage);
                                     }
                                 }
-
+                                // if (message.Contains(">D>"))
+            {
+                                
                                 // Clear the buffer, start over
                                 break; // inner loop
                             }

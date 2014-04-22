@@ -13,6 +13,7 @@ namespace WP_Controller.ViewModels
         {
             this.Items = new ObservableCollection<ItemViewModel>();
             this.Settings = new ObservableCollection<SettingViewModel>();
+            this.DebugLog = new ObservableCollection<DebugLogViewModel>();
         }
 
         /// <summary>
@@ -20,6 +21,7 @@ namespace WP_Controller.ViewModels
         /// </summary>
         public ObservableCollection<ItemViewModel> Items { get; private set; }
         public ObservableCollection<SettingViewModel> Settings { get; private set; }
+        public ObservableCollection<DebugLogViewModel> DebugLog { get; private set; }
 
         public void AddOrUpdateDevice(ItemViewModel device)
         {

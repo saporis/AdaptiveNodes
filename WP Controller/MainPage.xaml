@@ -48,6 +48,21 @@
                     </phone:LongListSelector.ItemTemplate>
                 </phone:LongListSelector>
             </phone:PivotItem>
+
+            <!--Debugging pivot -->
+            <phone:PivotItem Header="debug log">
+                <!--Double line list no text wrapping-->
+                <phone:LongListSelector Margin="0,0,-12,0" Name="DebugMessages" ItemsSource="{Binding Settings}" >
+                    <phone:LongListSelector.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel Margin="0,0,0,17">
+                                <TextBlock Text="{Binding LineOne}" TextWrapping="NoWrap" Margin="12,0,0,0" Style="{StaticResource PhoneTextExtraLargeStyle}"/>
+                                <TextBlock Text="{Binding LineTwo}" TextWrapping="NoWrap" Margin="12,-6,0,0" Style="{StaticResource PhoneTextSubtleStyle}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </phone:LongListSelector.ItemTemplate>
+                </phone:LongListSelector>
+            </phone:PivotItem>
         </phone:Pivot>
 
         <!--Uncomment to see an alignment grid to help ensure your controls are

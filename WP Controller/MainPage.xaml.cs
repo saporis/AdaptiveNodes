@@ -42,6 +42,104 @@ namespace WP_Controller
             //BuildLocalizedApplicationBar();
         }
 
+        void _adaptiveNodeControl_DebugCodeReceived(byte[] debugData) // TODO: switch to byte[] data, have serial handler do the >D> parsing
+        {
+            // Sample message: >M>B:0:0D:C3:FF:FF:427F::��������  (NOTE: there is a hidden byte between the "empty" ::)
+            // Format: ">M>" - Header
+            //          B - Direction. Options are (B)roadcast, (I)ncoming, (D)irect.
+            //          # - Pipe #. Broadcasts are usually on pipe 0, network broadcasts on pipe 1 
+            //              and direct messages on pipe 2. Encrypted streams usually are on pipe 3.
+            //          0D:C3 - Network ID and Device ID
+            //          FF:FF - Recipient Network ID and Device ID
+            //          427F  - Message Header (TTL and ID)
+            //          9-26 bytes - Message Data Field
+
+            if (message.Contains(">D>"))
+            {
+                string[] messagePacket = message.Split(new char[] { ':' }, StringSplitOptions.None);
+                if (messagePacket.Length >= 9 && messagePacket[0].StartsWith(">M>"))
+                {
+                    string networkId = messagePacket[2];
+                    string deviceId = messagePacket[3];
+
+                    MessageType msgType = MessageType.MSGTYPE_IGNORED;
+                    try
+                    {
+                        msgType = (MessageType)messagePacket[7][0];
+                    }
+                    catch (InvalidCastException)
+                    {
+
+                    }
+
+                    switch (msgType)
+                    {
+                        case MessageType.MSGTYPE_HEARTBEAT:
+                            StringBuilder friendlyName = new StringBuilder();
+
+                            // Remove null bytes
+                            for (int i = 0; i < messagePacket[8].Length; i++)
+                            {
+                                // As soon as we see any NUL bytes, bail.
+                                if ((int)messagePacket[8][i] == '�')
+                                {
+                                    break;
+                                }
+
+                                friendlyName.Append(messagePacket[8][i]);
+                            }
+
+                            WP_Controller.ViewModels.ItemViewModel device = new ViewModels.ItemViewModel
+                            {
+                                NetworkId = networkId,
+                                DeviceId = deviceId,
+                                DeviceType = DeviceType.Unknown,
+                                FriendlyName = friendlyName.ToString()
+                            };
+
+                            Dispatcher.BeginInvoke(delegate()
+                            {
+                                App.ViewModel.AddOrUpdateDevice(device);
+                                int deviceCount = App.ViewModel.Items.Count;
+                                PivotTitle.Title = String.Format("{0} - {1}({2})", DefaultAppTitle, App._adaptiveNodeControl.IsConnected ? "Connected" : "Disconnected", deviceCount);
+                            });
+                            break;
+                        case MessageType.MSGTYPE_ACK:
+                            // ACKs include the device type; update the internal database
+                            break;
+                        case MessageType.MSGTYPE_UPDATE:
+                            // "D�\0\0\0\0\0\0"
+                            int value = messagePacket[8][0];
+
+                            break;
+                        case MessageType.MSGTYPE_TRIGGER:
+                            // Sample format - port(B,C,D):MaskValue, eg: "D�\0\0\0\0\0\0"
+                            for (int i = 0; i < 8; i += 2)
+                            {
+                                char port = messagePacket[8][i];
+                                if (port == 0)
+                                {
+                                    break;
+                                }
+                                PortMasks ports = (PortMasks)messagePacket[8][i + 1];
+                                // These double checks are used as error correcting checks incase we get bad/odd data back
+                                if (port == 'B' && ports == (PortMasks.MASK_PORT_B1 | PortMasks.MASK_PORT_B2))
+                                {
+                                    App.portsTriggered |= ports;
+                                }
+                                if (port == 'D' && ports == (PortMasks.MASK_PORT_D2 | PortMasks.MASK_PORT_D3 | PortMasks.MASK_PORT_D4 | PortMasks.MASK_PORT_D5 | PortMasks.MASK_PORT_D6))
+                                {
+                                    App.portsTriggered |= ports;
+                                }
+                            }
+
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            }
+        }
 
 
         void _adaptiveNodeControl_MessageReceived(string message)
@@ -161,6 +259,8 @@ namespace WP_Controller
             await ConnectToDevice(hostname);
         }
 
+        // Quick way of keeping the user from being redirected over and over to the settings page 
+        private static bool hasShownBtReminder = false;
         private async Task<HostName> QueryAdaptiveNodeBT()
         {
             PivotTitle.Title = DefaultAppTitle + "- Connecting...";
@@ -179,7 +279,11 @@ namespace WP_Controller
             {
                 Debug.WriteLine("No paired devices were found.");
                 MessageBox.Show("No Adaptive Node BT Device Found");
-                await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings-bluetooth:"));
+                if (!hasShownBtReminder)
+                {
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings-bluetooth:"));
+                    hasShownBtReminder = true;
+                }
                 return null;
             }
 

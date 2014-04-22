@@ -97,6 +97,7 @@
     <Compile Include="DevicePage.xaml.cs">
       <DependentUpon>DevicePage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ErrorCodes.cs" />
     <Compile Include="MessageType.cs" />
     <Compile Include="DeviceType.cs" />
     <Compile Include="LocalizedStrings.cs" />
@@ -110,6 +111,7 @@
       <DependentUpon>AppResources.resx</DependentUpon>
     </Compile>
     <Compile Include="SettingsMenuItem.cs" />
+    <Compile Include="ViewModels\DebugLogViewModel.cs" />
     <Compile Include="ViewModels\SettingViewModel.cs" />
     <Compile Include="ViewModels\ItemViewModel.cs" />
     <Compile Include="ViewModels\MainViewModel.cs" />
