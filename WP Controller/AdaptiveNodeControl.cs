@@ -133,6 +133,23 @@ namespace WP_Controller
             return bytes;
         }
 
+        public bool SendMessage(string networkId, string recipientId, MessageType messageType, byte[] payloadData, int retries)
+        {
+            bool success = false;
+            for (int i = 0; i < retries; ++i)
+            {
+                success = SendMessage(networkId, recipientId, messageType, payloadData);
+                if (!success)
+                {
+                    return success;
+                }
+
+                System.Threading.Thread.Sleep(100);
+            }
+
+            return success;
+        }
+
         // Expected Message Format: M:0D:C3:FF:FF:427F::��������  (':' are optional)
         public bool SendMessage(string networkId, string recipientId, MessageType messageType, byte[] payloadData)
         {
@@ -153,7 +170,7 @@ namespace WP_Controller
             rawMessage[index++] = deviceByte[0];
             byte[] messageId = new byte[1];
             new Random().NextBytes(messageId);
-            // MessageId - the TTL is decremented before resending and a new header is generated
+            // MessageId - the TTL is decremented before resending
             rawMessage[index++] = messageId[0]; 
             rawMessage[index++] = 0x4F;// TODO: this is a hardcoded TTL of 4, need to update
 
@@ -161,7 +178,7 @@ namespace WP_Controller
             rawMessage[index++] = (byte)messageType;
 
             // Data 9 - 26 bytes when using P header
-            for (int i = 0; i < 9 && i < payloadData.Length; ++i)
+            for (int i = 0; i <= 9 && i < payloadData.Length; ++i)
             {
                rawMessage[index++] = payloadData[i];
             }

@@ -71,7 +71,7 @@ namespace WP_Controller
                             parsedMessage.MessageData = new byte[dataSize];
                         }
 
-                        for (int i = 0; i < parsedMessage.MessageData.Length - 1; ++i)
+                        for (int i = 0; i < parsedMessage.MessageData.Length; ++i)
                         {
                             parsedMessage.MessageData[i] = data[parsedCounter++];
                         }

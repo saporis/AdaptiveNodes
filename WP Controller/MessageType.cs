@@ -16,8 +16,17 @@
         // This allows one to program devices that have a conflicting device ID.
         MSGTYPE_NEW_SETUP =     0x11,
 
-        MSGTYPE_TIME =          0x20,
-        MSGTYPE_DEVICE_ARP =    0x0F,
+        // Sets the friendly description of the device, the first byte being the text
+        // index, giving a maximum description length of 128 bytes.
+        MSGTYPE_SET_DESC    =   0x20,
+        MSGTYPE_GET_DESC    =   0x21,
+
+        // When a node replies to a name request
+        MSGTYPE_DESC_REPLY	=   0x22,
+
+
+        MSGTYPE_TIME =          0x30,
+        MSGTYPE_DEVICE_ARP =    0x32,
         MSGTYPE_NETWORK_ARP =   0x33,
     }
 
@@ -34,10 +43,27 @@
         MSGSETUP_DIGITALLOW = 0x1B,	// Digital port to set low, valid values B1, B2, D2-D6.
         MSGSETUP_RESETPORT	= 0x1C,	// Resets a port - same as digital/analog low.
 
+        MSGSETUP_PWM_ENABLE		= 0x31,
+        MSGSETUP_PWM_CLOCK		= 0x32,
+
+        PWM_CLOCK_DIVISOR_1     = 0x1,
+        PWM_CLOCK_DIVISOR_8		= 0x2,
+        PWM_CLOCK_DIVISOR_64	= 0x3,
+        PWM_CLOCK_DIVISOR_128	= 0x4,
+        PWM_CLOCK_DIVISOR_1024	= 0x5,
+
         MSGSETUP_DISABLE_ANALOG_PULLUP	= 0x15,	// Analog port to set as input and disable pull up resistor, valid values C0-C7, excluding C3
         MSGSETUP_DISABLE_DIGITAL_PULLUP	= 0x16,	// Digital port to set as input and disable pull up resistor, valid values B1, B2, D2-D6.
     }
 
+    public enum ClockDivisor : byte
+    {
+        PWM_CLOCK_DIVISOR_1 = 0x1,
+        PWM_CLOCK_DIVISOR_8 = 0x2,
+        PWM_CLOCK_DIVISOR_64 = 0x3,
+        PWM_CLOCK_DIVISOR_128 = 0x4,
+        PWM_CLOCK_DIVISOR_1024 = 0x5
+    }
 
     public enum PortMasks : byte
     {

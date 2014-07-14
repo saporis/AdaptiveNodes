@@ -50,16 +50,6 @@ namespace WP_Controller
 
         void _adaptiveNodeControl_MessageReceived(Message message)
         {
-            // Sample message: >M>B:0:0D:C3:FF:FF:427F::��������  (NOTE: there is a hidden byte between the "empty" ::)
-            // Format: ">M>" - Header
-            //          B - Direction. Options are (B)roadcast, (I)ncoming, (D)irect.
-            //          # - Pipe #. Broadcasts are usually on pipe 0, network broadcasts on pipe 1 
-            //              and direct messages on pipe 2. Encrypted streams usually are on pipe 3.
-            //          0D:C3 - Network ID and Device ID
-            //          FF:FF - Recipient Network ID and Device ID
-            //          427F  - Message Header (TTL and ID)
-            //          9-26 bytes - Message Data Field
-
             if (message == null)
             {
                 return;
@@ -93,10 +83,11 @@ namespace WP_Controller
                 {
                     WP_Controller.ViewModels.ItemViewModel device = new ViewModels.ItemViewModel
                     {
-                        NetworkId = String.Format("{0:X2}", message.NetworkId),
-                        DeviceId = String.Format("{0:X2}", message.DeviceId),
+                        // The message data actually contains the sending devices ID and network ID
+                        NetworkId = String.Format("{0:X2}", message.MessageData[0]),
+                        DeviceId = String.Format("{0:X2}", message.MessageData[1]),
                         DeviceType = DeviceType.Unknown,
-                        UniqueAddress = String.Format("{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}", message.MessageData[0], message.MessageData[1], message.MessageData[2], message.MessageData[3], message.MessageData[0]),
+                        UniqueAddress = String.Format("{0:X2}{1:X2}{2:X2}{3:X2}{4:X2}", message.MessageData[0], message.MessageData[1], message.MessageData[2], message.MessageData[3], message.MessageData[4]),
                     };
 
                     Dispatcher.BeginInvoke(delegate()

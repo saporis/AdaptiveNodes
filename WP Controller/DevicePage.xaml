@@ -108,7 +108,7 @@
 
                     <TextBlock HorizontalAlignment="Left" Margin="10,301,0,0" TextWrapping="Wrap" Text="Port Status From Device" VerticalAlignment="Top" FontSize="24"/>
                     <TextBlock Name="AnalogPortStatus" HorizontalAlignment="Left" Margin="10,338,0,0" TextWrapping="Wrap" Text="-no updates received-" VerticalAlignment="Top" FontSize="22" Height="135" Width="404"/>
-                    <Button Content="Reset Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-4,234,0,0" Width="162" Click="DigitalButton_Click"/>
+                    <Button Content="Reset Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-4,234,0,0" Width="162" Click="AnalogResetButton_Click"/>
 
                 </Grid>
             </phone:PanoramaItem>
@@ -182,7 +182,7 @@
 
                     <TextBlock HorizontalAlignment="Left" Margin="10,301,0,0" TextWrapping="Wrap" Text="Port Status From Device" VerticalAlignment="Top" FontSize="24"/>
                     <TextBlock Name="PortStatus" HorizontalAlignment="Left" Margin="10,338,0,0" TextWrapping="Wrap" Text="-no updates received-" VerticalAlignment="Top" FontSize="22" Height="135" Width="404"/>
-                    <Button Content="Reset Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-4,234,0,0" Width="162" Click="DigitalButton_Click"/>
+                    <Button Content="Reset Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-4,234,0,0" Width="162" Click="ResetPortButton_Click"/>
 
 
                 </Grid>
@@ -192,10 +192,10 @@
                 <Grid>
                     <TextBlock HorizontalAlignment="Left" Margin="86,0,0,0" TextWrapping="Wrap" Text="B1" VerticalAlignment="Top"/>
                     <TextBlock HorizontalAlignment="Left" Margin="184,0,0,0" TextWrapping="Wrap" Text="B2" VerticalAlignment="Top"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="286,0,0,456" TextWrapping="Wrap" Text="D5" VerticalAlignment="Bottom" Width="39"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="286,0,0,0" TextWrapping="Wrap" Text="D5" VerticalAlignment="Top" Width="39"/>
                     <TextBlock HorizontalAlignment="Left" Margin="384,0,-9,0" TextWrapping="Wrap" Text="D6" VerticalAlignment="Top" Width="45"/>
 
-                    <TextBlock HorizontalAlignment="Left" Margin="10,45,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" FontSize="24"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,47,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" FontSize="24"/>
                     <Slider Name="PWMPortSelectionSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="336" Margin="78,28,0,0" Height="92" 
                             Foreground="{x:Null}" Maximum="3" Minimum="0" ValueChanged="PortSlider_ValueChanged" 
                             Value="0">
@@ -208,7 +208,7 @@
                     </Slider>
 
                     <TextBlock HorizontalAlignment="Left" Margin="152,96,0,0" TextWrapping="Wrap" Text="0%" VerticalAlignment="Top"/>
-                    <TextBlock Margin="264,96,81,0" TextWrapping="Wrap" Text="50%" VerticalAlignment="Top"/>
+                    <TextBlock Margin="262,96,83,0" TextWrapping="Wrap" Text="50%" VerticalAlignment="Top"/>
                     <TextBlock Margin="372,96,-27,0" TextWrapping="Wrap" Text="100%" VerticalAlignment="Top"/>
                     <TextBlock HorizontalAlignment="Left" Margin="10,125,0,0" TextWrapping="Wrap" Text="DutyCycle" VerticalAlignment="Top" FontSize="24"/>
                     <Slider Name="PWMLevelSlider" HorizontalAlignment="Right" VerticalAlignment="Top" Width="275" Margin="0,108,4,0" Height="92" 
@@ -222,14 +222,13 @@
                         </Slider.Background>
                     </Slider>
 
-                    <TextBlock HorizontalAlignment="Left" Margin="156,166,0,0" TextWrapping="Wrap" Text="/8" VerticalAlignment="Top"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="222,166,0,0" TextWrapping="Wrap" Text="/64" VerticalAlignment="Top"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="298,166,0,0" TextWrapping="Wrap" Text="/128" VerticalAlignment="Top"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="354,166,0,0" TextWrapping="Wrap" Text="/1024" VerticalAlignment="Top"/>
-                    <TextBlock HorizontalAlignment="Left" Margin="10,197,0,0" TextWrapping="Wrap" Text="Clock Divisor" VerticalAlignment="Top" FontSize="24"/>
-                    <Slider Name="PWMClockSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Margin="143,178,0,0" Height="92" 
-                    	Foreground="{x:Null}" Maximum="3" Minimum="0" ValueChanged="PWMClockSlider_ValueChanged"
-                    	Value="3">
+                    <TextBlock HorizontalAlignment="Left" Margin="156,160,0,0" TextWrapping="Wrap" Text="50z" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="262,160,0,0" TextWrapping="Wrap" Text="7Khz" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="362,160,0,0" TextWrapping="Wrap" Text="15Khz" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,188,0,0" TextWrapping="Wrap" Text="Clock Rate" VerticalAlignment="Top" FontSize="24"/>
+                    <Slider Name="bPWMFrequencySliderMin" HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Margin="141,174,0,0" Height="92" 
+                    	Foreground="{x:Null}" Maximum="15000" Minimum="50" ValueChanged="PWMMinFrequency_ValueChanged" 
+                    	Value="300">
                         <Slider.Background>
                             <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
                                 <GradientStop Color="Black" Offset="0"/>
@@ -238,12 +237,72 @@
                         </Slider.Background>
                     </Slider>
 
-                    <Button Content="Update" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="268,234,0,0" Width="152" Click="DigitalButton_Click"/>
+                    <!-- Allow higher frequencies. Not implemented for now as the use cases are pretty limited.
+                    <TextBlock HorizontalAlignment="Left" Margin="156,262,0,0" TextWrapping="Wrap" Text="15khz" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="262,262,0,0" TextWrapping="Wrap" Text="130khz" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="355,262,0,0" TextWrapping="Wrap" Text="250khz" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,285,0,0" TextWrapping="Wrap" Text="Fast Clock" VerticalAlignment="Top" FontSize="24"/>
+                    <Slider Name="PWMFrequencySlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Margin="143,275,0,0" Height="92" 
+                    	Foreground="{x:Null}" Maximum="250000" Minimum="15001" ValueChanged="PWMFrequency_ValueChanged" 
+                    	Value="15001">
+                        <Slider.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="0"/>
+                                <GradientStop Color="#FF72ADE8" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Slider.Background>
+                    </Slider>
+                    -->
 
-                    <TextBlock HorizontalAlignment="Left" Margin="10,301,0,0" TextWrapping="Wrap" Text="Port Status From Device" VerticalAlignment="Top" FontSize="24"/>
-                    <TextBlock Name="PwmResultText" HorizontalAlignment="Left" Margin="10,338,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" FontSize="22" Height="135" Width="404"/>
-                    <Button Content="Reset Port" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-4,234,0,0" Width="162" Click="DigitalButton_Click"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="14,353,0,0" TextWrapping="Wrap" Text="Frequency" VerticalAlignment="Top" FontSize="24"/>
+                    <TextBlock Name="FrequencyText" HorizontalAlignment="Left" Margin="14,387,0,-8" TextWrapping="Wrap" Text="243 Hz" VerticalAlignment="Top" FontSize="24"/>
 
+                    <Button Content="Enable PWM" HorizontalAlignment="Left" VerticalAlignment="Top" 
+                            Margin="235,330,0,0" Width="181" Click="PWMEnableButton_Click"/>
+
+
+                </Grid>
+            </phone:PanoramaItem>
+
+
+            <phone:PanoramaItem Header="servo control">
+                <Grid>
+                    <TextBlock HorizontalAlignment="Left" Margin="86,0,0,0" TextWrapping="Wrap" Text="B1" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="184,0,0,0" TextWrapping="Wrap" Text="B2" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="286,0,0,0" TextWrapping="Wrap" Text="D5" VerticalAlignment="Top" Width="39"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="384,0,-9,0" TextWrapping="Wrap" Text="D6" VerticalAlignment="Top" Width="45"/>
+
+                    <TextBlock HorizontalAlignment="Left" Margin="10,47,0,0" TextWrapping="Wrap" Text="Port" VerticalAlignment="Top" FontSize="24"/>
+                    <Slider Name="ServoPortSelectionSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="336" Margin="78,28,0,0" Height="92" 
+                            Foreground="{x:Null}" Maximum="3" Minimum="0" ValueChanged="PortSlider_ValueChanged" 
+                            Value="0">
+                        <Slider.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="0"/>
+                                <GradientStop Color="#FF72ADE8" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Slider.Background>
+                    </Slider>
+
+                    <TextBlock HorizontalAlignment="Left" Margin="156,95,0,0" TextWrapping="Wrap" Text="0" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="262,95,0,0" TextWrapping="Wrap" Text="1ms" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="362,95,0,0" TextWrapping="Wrap" Text="2ms" VerticalAlignment="Top"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,134,0,0" TextWrapping="Wrap" Text="Pulse Width" VerticalAlignment="Top" FontSize="24"/>
+                    <Slider Name="PulseWidthSlider" HorizontalAlignment="Left" VerticalAlignment="Top" Width="275" Margin="141,120,0,0" Height="92" 
+                    	Foreground="{x:Null}" Maximum="2" Minimum="0" ValueChanged="CalculatePulseWidth" 
+                    	Value="1">
+                        <Slider.Background>
+                            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                <GradientStop Color="Black" Offset="0"/>
+                                <GradientStop Color="#FF72ADE8" Offset="1"/>
+                            </LinearGradientBrush>
+                        </Slider.Background>
+                    </Slider>
+
+                    <TextBlock Name="PulseWidthText" HorizontalAlignment="Left" Margin="62,180,0,0" TextWrapping="Wrap" Text="1.0 ms" VerticalAlignment="Top" FontSize="24"/>
+
+                    <Button Content="Update" VerticalAlignment="Top" 
+                            Margin="239,171,0,0" Click="ServoEnableButton_Click"/>
 
                 </Grid>
             </phone:PanoramaItem>
@@ -268,6 +327,12 @@
                     <TextBlock HorizontalAlignment="Left" Margin="18,175,0,0" TextWrapping="Wrap" 
                                Text="(be very careful when changing the channel)" VerticalAlignment="Top" FontSize="17" Width="332"/>
 
+                    <TextBlock HorizontalAlignment="Left" Margin="10,201,0,0" TextWrapping="Wrap" Text="Description: " VerticalAlignment="Top" FontSize="24" Width="142"/>
+                    <TextBox HorizontalAlignment="Left" Height="146" Margin="133,199,0,0" TextWrapping="Wrap" Text="(not yet retrieved)" 
+                             VerticalAlignment="Top" Width="287" FontSize="20" MaxLength="128" Name="Description"/>
+                    <TextBlock HorizontalAlignment="Left" Margin="10,233,0,0" TextWrapping="Wrap" 
+                               Text="(max 128 ascii characters)" VerticalAlignment="Top" FontSize="17" Width="123"/>
+
                     <TextBlock HorizontalAlignment="Left" Margin="10,345,0,0" TextWrapping="Wrap" Text="Normal" VerticalAlignment="Top" FontSize="24" Width="142"/>
                     <TextBlock HorizontalAlignment="Left" Margin="268,345,0,0" TextWrapping="Wrap" Text="New Device" VerticalAlignment="Top" FontSize="24" Width="142" Tap="NewDevice_Tap"/>
                     <Slider Name="NewDeviceSetup" HorizontalAlignment="Left" VerticalAlignment="Top" Width="162" Margin="101,328,0,0" Height="92" 
@@ -280,13 +345,23 @@
                             </LinearGradientBrush>
                         </Slider.Background>
                     </Slider>
-                    <Button Content="Program" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="268,401,0,0" Width="152" Click="DigitalButton_Click"/>
 
+                    <Button Content="Update Addr" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="-7,377,0,0" Width="159" FontSize="18"/>
+                    <Button Content="Update Chan" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="134,377,0,0" Width="152" FontSize="18"/>
+                    <Button Content="Update Desc" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="268,377,0,0" Width="152" FontSize="18" Click="UpdateDescription_Click"/>
 
                 </Grid>
             </phone:PanoramaItem>
 
         </phone:Panorama>
     </Grid>
+
+    <phone:PhoneApplicationPage.ApplicationBar>
+        <shell:ApplicationBar IsVisible="True" IsMenuEnabled="True" Mode="Minimized">
+            <shell:ApplicationBar.MenuItems>
+                <shell:ApplicationBarMenuItem Text="Force description download" Click="ForceDescriptionDownload_Click"/>
+            </shell:ApplicationBar.MenuItems>
+        </shell:ApplicationBar>
+    </phone:PhoneApplicationPage.ApplicationBar>
 
 </phone:PhoneApplicationPage>
